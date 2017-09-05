@@ -22,12 +22,14 @@ namespace FizzBuzz
                 divisBy3 = i % 3 == 0;
                 divisBy5 = i % 5 == 0;
                 divisBy7 = i % 7 == 0;
+                divisBy11 = i % 11 == 0;
                 result = "";
 
                 //if (divisBy3 && divisBy5) { Console.WriteLine("FizzBuzz"); }
                 if (divisBy3) { result += "Fizz"; }
                 if (divisBy5) { result += "Buzz"; }
-                if (divisBy7) { result += "Bang";  }
+                if (divisBy7) { result += "Bang"; }
+                if (divisBy11) { result = "Bong"; }
                 if (result == "") { result = i.ToString(); }
 
                 Console.WriteLine(result);

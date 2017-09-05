@@ -19,7 +19,7 @@ namespace FizzBuzz
             bool divisBy17;
             List<string> result = new List<string>();
 
-            for(int i = 1; i < 201; i++)
+            for(int i = 1; i < 301; i++)
             {
                 divisBy3 = i % 3 == 0;
                 divisBy5 = i % 5 == 0;
@@ -42,6 +42,7 @@ namespace FizzBuzz
                 }
                 if (result.Count == 0) { result.Add(i.ToString()); }
 
+                if (divisBy17) { result.Reverse(); }
                 Console.WriteLine(string.Join("", result));
             }
 

@@ -16,7 +16,8 @@ namespace FizzBuzz
             bool divisBy7;
             bool divisBy11;
             bool divisBy13;
-            string result;
+            bool divisBy17;
+            List<string> result = new List<string>();
 
             for(int i = 1; i < 201; i++)
             {
@@ -25,21 +26,23 @@ namespace FizzBuzz
                 divisBy7 = i % 7 == 0;
                 divisBy11 = i % 11 == 0;
                 divisBy13 = i % 13 == 0;
-                result = "";
+                divisBy17 = i % 17 == 0;
+                result.Clear();
 
                 //if (divisBy3 && divisBy5) { Console.WriteLine("FizzBuzz"); }
-                if (divisBy3) { result += "Fizz"; }
-                if (divisBy13) { result += "Fezz"; }
-                if (divisBy5) { result += "Buzz"; }
-                if (divisBy7) { result += "Bang"; }
+                if (divisBy3) { result.Add("Fizz"); }
+                if (divisBy13) { result.Add("Fezz"); }
+                if (divisBy5) { result.Add("Buzz"); }
+                if (divisBy7) { result.Add("Bang"); }
                 if (divisBy11)
                 {
-                    if (divisBy13) { result = "FezzBong"; }
-                    else { result = "Bong"; }
+                    result.Clear();
+                    if (divisBy13) { result.Add("FezzBong"); }
+                    else { result.Add("Bong"); }
                 }
-                if (result == "") { result = i.ToString(); }
+                if (result.Count == 0) { result.Add(i.ToString()); }
 
-                Console.WriteLine(result);
+                Console.WriteLine(string.Join("", result));
             }
 
         }

@@ -18,8 +18,13 @@ namespace FizzBuzz
             bool divisBy13;
             bool divisBy17;
             List<string> result = new List<string>();
+            int upperLimit;
 
-            for(int i = 1; i < 301; i++)
+            Console.WriteLine("Please enter the number you would like to go up to.");
+
+            upperLimit = Convert.ToInt32(Console.ReadLine());
+
+            for(int i = 1; i <= upperLimit; i++)
             {
                 divisBy3 = i % 3 == 0;
                 divisBy5 = i % 5 == 0;

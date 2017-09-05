@@ -11,27 +11,35 @@ namespace FizzBuzz
         static void Main(string[] args)
         {
 
-            bool divisBy3;
-            bool divisBy5;
-            bool divisBy7;
-            bool divisBy11;
-            bool divisBy13;
-            bool divisBy17;
+            bool divisBy3 = false;
+            bool divisBy5 = false;
+            bool divisBy7 = false;
+            bool divisBy11 = false;
+            bool divisBy13 = false;
+            bool divisBy17 = false;
             List<string> result = new List<string>();
             int upperLimit;
+            string rulesString;
+            List<string> rulesList = new List<string>();
 
             Console.WriteLine("Please enter the number you would like to go up to.");
 
             upperLimit = Convert.ToInt32(Console.ReadLine());
 
-            for(int i = 1; i <= upperLimit; i++)
+            Console.WriteLine("Please enter the numbers you would like to have rules apply to, separated by commas." +
+                              "Choose from 3, 5, 7, 11, 13, 17");
+
+            rulesString = Console.ReadLine();
+            rulesList = rulesString.Split(',').ToList();
+
+            for (int i = 1; i <= upperLimit; i++)
             {
-                divisBy3 = i % 3 == 0;
-                divisBy5 = i % 5 == 0;
-                divisBy7 = i % 7 == 0;
-                divisBy11 = i % 11 == 0;
-                divisBy13 = i % 13 == 0;
-                divisBy17 = i % 17 == 0;
+                if (rulesList.Contains("3")) { divisBy3 = i % 3 == 0; }
+                if (rulesList.Contains("5")) { divisBy5 = i % 5 == 0; }
+                if (rulesList.Contains("7")) { divisBy7 = i % 7 == 0; }
+                if (rulesList.Contains("11")) { divisBy11 = i % 11 == 0; }
+                if (rulesList.Contains("13")) { divisBy13 = i % 13 == 0; }
+                if (rulesList.Contains("17")) { divisBy17 = i % 17 == 0; }
                 result.Clear();
 
                 //if (divisBy3 && divisBy5) { Console.WriteLine("FizzBuzz"); }

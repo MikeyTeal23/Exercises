@@ -9,19 +9,48 @@ namespace TLS
 {
     class Program
     {
-        static int regexCount(string TLS, string text)
+        static Dictionary<string, int> regexCount(string TLS, string text)
         {
             Regex rgx = new Regex(TLS, RegexOptions.IgnoreCase);
 
+            Dictionary<string, int> dict = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
             Match match = rgx.Match(text);
-            int matchCount = 0;
+            string s = "";
+
             while (match.Success)
             {
-                matchCount++;
-                match = match.NextMatch();
+                Group g = match.Groups[0];
+                s = g.ToString();
+
+                if (dict.ContainsKey(s))
+                {
+                    dict[s]++;
+                }
+                else
+                {
+                    dict.Add(s, 1);
+                }
+
+                match = rgx.Match(text, match.Index + 1);
+            }
+            
+            return dict;
+        }
+
+        static List<string> outputEntries(Dictionary<string, int> dict, int freq)
+        {
+            List<string> list = new List<string>();
+
+            foreach (string k in dict.Keys)
+            {
+                if(dict[k] == freq)
+                {
+                    list.Add(k);
+                }
             }
 
-            return matchCount;
+            return list;
         }
 
 
@@ -32,41 +61,21 @@ namespace TLS
 
             string readText = System.IO.File.ReadAllText(filepath);
 
-            Dictionary<string, int> dict = new Dictionary<string, int>();
+            Dictionary<string, int> dictionary = new Dictionary<string, int>();
 
-            string regexPattern = "";
+            string regexPattern = @"\w\w\w";
 
-            int counter = 0;
+            dictionary = regexCount(regexPattern, readText);
 
-            for (char c0 = 'a'; c0 <= 'z'; c0++)
+            List<string> outputList = outputEntries(dictionary, 63);
+            for(int i = 0; i < outputList.Count(); i++)
             {
-                Console.WriteLine(c0);
-
-                for (char c1 = 'a'; c1 <= 'z'; c1++)
-                {
-                    for (char c2 = 'a'; c2 <= 'z'; c2++)
-                    {
-                        char[] chars = { c0, c1, c2 };
-                        regexPattern = new string(chars);
-                        counter = regexCount(regexPattern, readText);
-
-                        dict.Add(regexPattern, counter);
-
-                        if(counter == 63) { Console.WriteLine(regexPattern); }
-                    }
-                }
+                Console.WriteLine(outputList[i]);
             }
 
-            dict.OrderBy(x => x.Value);
+            //Console.WriteLine(dictionary["tra"].ToString());
 
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    Console.WriteLine
-            //}
-
-            //int counter = regexCount(regexPattern, readText);
-
-            //Console.WriteLine(counter.ToString());
+            dictionary.OrderBy(x => x.Value);
 
         }
     }

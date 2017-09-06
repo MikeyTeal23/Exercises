@@ -32,27 +32,33 @@ namespace TLS
 
             string readText = System.IO.File.ReadAllText(filepath);
 
-            string regexPattern = "tra";
+            Dictionary<string, int> dict = new Dictionary<string, int>();
 
-            int counter = regexCount(regexPattern, readText);
+            string regexPattern = "";
 
-            Console.WriteLine(counter.ToString());
+            int counter = 0;
 
-            //int counter = 0;
+            for (char c0 = 'a'; c0 <= 'z'; c0++)
+            {
+                Console.WriteLine(c0);
 
-            //for(int i = 0 ; i < readText.Length - 2; i++)
-            //{
+                for (char c1 = 'a'; c1 <= 'z'; c1++)
+                {
+                    for (char c2 = 'a'; c2 <= 'z'; c2++)
+                    {
+                        char[] chars = { c0, c1, c2 };
+                        regexPattern = new string(chars);
+                        counter = regexCount(regexPattern, readText);
 
-            //    if((readText[i] == 't') && (readText[i+1] == 'r') && (readText[i+2] == 'a'))
-            //    {
-            //        counter++;
-            //    }
-            //}
+                        dict.Add(regexPattern, counter);
+                    }
+                }
+            }
+
+
+            //int counter = regexCount(regexPattern, readText);
 
             //Console.WriteLine(counter.ToString());
-
-            Dictionary<string, int> dictionary = new Dictionary<string, int>();
-
 
         }
     }

@@ -51,10 +51,18 @@ namespace TLS
                         counter = regexCount(regexPattern, readText);
 
                         dict.Add(regexPattern, counter);
+
+                        if(counter == 63) { Console.WriteLine(regexPattern); }
                     }
                 }
             }
 
+            dict.OrderBy(x => x.Value);
+
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    Console.WriteLine
+            //}
 
             //int counter = regexCount(regexPattern, readText);
 

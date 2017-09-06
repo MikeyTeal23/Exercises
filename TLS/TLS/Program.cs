@@ -41,9 +41,8 @@ namespace TLS
 
         static List<string> outputEntries(Dictionary<string, int> dict, int freq)
         {
-            List<string> list = new List<string>();
 
-            list = dict.Where(x => x.Value == freq).Select(x => x.Key).ToList();
+            List<string> list = dict.Where(x => x.Value == freq).Select(x => x.Key).ToList();
 
             //foreach (string k in dict.Keys)
             //{
@@ -65,14 +64,9 @@ namespace TLS
 
             string readText = System.IO.File.ReadAllText(filepath);
 
-            Dictionary<string, int> dictionary = new Dictionary<string, int>();
-
             string regexPattern = @"\w\w\w";
 
-            dictionary = regexCount(regexPattern, readText);
-
-            List<string> outputList = outputEntries(dictionary, 63);
-            foreach (string entry in outputList) { Console.WriteLine(entry); }
+            Dictionary<string, int> dictionary = regexCount(regexPattern, readText);
 
             var sortedDict = from entry in dictionary orderby entry.Value descending select entry;
 
@@ -81,6 +75,14 @@ namespace TLS
                 Console.WriteLine("{0}) the TLS {1} has {2} counts.", i, sortedDict.ElementAt(i).Key, sortedDict.ElementAt(i).Value);
             }
 
+            Console.WriteLine("Please enter a frequency.");
+
+            int requestedFreq = Convert.ToInt32(Console.ReadLine());
+
+            List<string> outputList = outputEntries(dictionary, requestedFreq);
+
+            if (outputList.Count == 0) { Console.WriteLine("There were no TLSs appearing this number of times."); }
+            foreach (string entry in outputList) { Console.WriteLine(entry); }
         }
     }
 }

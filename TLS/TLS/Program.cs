@@ -22,6 +22,7 @@ namespace TLS
             {
                 Group g = match.Groups[0];
                 s = g.ToString();
+                s = s.ToLower();
 
                 if (dict.ContainsKey(s))
                 {
@@ -34,7 +35,7 @@ namespace TLS
 
                 match = rgx.Match(text, match.Index + 1);
             }
-            
+
             return dict;
         }
 
@@ -42,13 +43,16 @@ namespace TLS
         {
             List<string> list = new List<string>();
 
-            foreach (string k in dict.Keys)
-            {
-                if(dict[k] == freq)
-                {
-                    list.Add(k);
-                }
-            }
+            list = dict.Where(x => x.Value == freq).Select(x => x.Key).ToList();
+
+            //foreach (string k in dict.Keys)
+            //{
+            //    if(dict[k] == freq)
+            //    {
+            //        list.Add(k);
+            //    }
+            //}
+
 
             return list;
         }
@@ -68,14 +72,14 @@ namespace TLS
             dictionary = regexCount(regexPattern, readText);
 
             List<string> outputList = outputEntries(dictionary, 63);
-            for(int i = 0; i < outputList.Count(); i++)
+            foreach (string entry in outputList) { Console.WriteLine(entry); }
+
+            var sortedDict = from entry in dictionary orderby entry.Value descending select entry;
+
+            for (int i = 0; i < 10; i++)
             {
-                Console.WriteLine(outputList[i]);
+                Console.WriteLine("{0}) the TLS {1} has {2} counts.", i, sortedDict.ElementAt(i).Key, sortedDict.ElementAt(i).Value);
             }
-
-            //Console.WriteLine(dictionary["tra"].ToString());
-
-            dictionary.OrderBy(x => x.Value);
 
         }
     }

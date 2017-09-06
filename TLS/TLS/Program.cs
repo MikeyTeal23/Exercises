@@ -16,13 +16,19 @@ namespace TLS
             Dictionary<string, int> dict = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
 
             Match match = rgx.Match(text);
-            string s = "";
+            string[] stringArray = new string[3];
+            string s;
 
             while (match.Success)
             {
-                Group g = match.Groups[0];
-                s = g.ToString();
-                s = s.ToLower();
+                s = "";
+
+                for (int i = 0; i < 3; i++)
+                {
+                    stringArray[i] = match.Groups[i+1].ToString();
+                    stringArray[i] = stringArray[i].ToLower();
+                    s += stringArray[i];
+                }
 
                 if (dict.ContainsKey(s))
                 {
@@ -64,7 +70,9 @@ namespace TLS
 
             string readText = System.IO.File.ReadAllText(filepath);
 
-            string regexPattern = @"\w\w\w";
+            string regexPattern = @"(\w)\W*(\w)\W*(\w)";
+            //string regexPattern = @"\w\w\w";
+
 
             Dictionary<string, int> dictionary = regexCount(regexPattern, readText);
 

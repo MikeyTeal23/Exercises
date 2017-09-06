@@ -9,6 +9,22 @@ namespace TLS
 {
     class Program
     {
+        static int regexCount(string TLS, string text)
+        {
+            Regex rgx = new Regex(TLS, RegexOptions.IgnoreCase);
+
+            Match match = rgx.Match(text);
+            int matchCount = 0;
+            while (match.Success)
+            {
+                matchCount++;
+                match = match.NextMatch();
+            }
+
+            return matchCount;
+        }
+
+
         static void Main(string[] args)
         {
 
@@ -18,22 +34,15 @@ namespace TLS
 
             string regexPattern = "tra";
 
-            Regex rgx = new Regex(regexPattern, RegexOptions.IgnoreCase);
+            int counter = regexCount(regexPattern, readText);
 
-            Match match = rgx.Match(readText);
-            int matchCount = 0;
-            while (match.Success) {
-                matchCount++;
-                match = match.NextMatch();
-            }
-
-            Console.WriteLine(matchCount.ToString());
+            Console.WriteLine(counter.ToString());
 
             //int counter = 0;
 
             //for(int i = 0 ; i < readText.Length - 2; i++)
             //{
-                
+
             //    if((readText[i] == 't') && (readText[i+1] == 'r') && (readText[i+2] == 'a'))
             //    {
             //        counter++;
@@ -41,6 +50,9 @@ namespace TLS
             //}
 
             //Console.WriteLine(counter.ToString());
+
+            Dictionary<string, int> dictionary = new Dictionary<string, int>();
+
 
         }
     }

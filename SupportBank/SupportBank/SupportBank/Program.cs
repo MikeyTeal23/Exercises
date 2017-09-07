@@ -87,8 +87,10 @@ namespace SupportBank
                         }
                         catch (FormatException ex)
                         {
-                            logger.Error("Date is in incorrect format");
-                            Console.WriteLine(ex);
+                            logger.Error("Error is on line {0}.  Date is in incorrect format.", lineCounter);
+                            Console.WriteLine("Error is on line {0}.  Date is in incorrect format.  Note that " +
+                                "this entry has not been included.\n ", lineCounter);
+                            continue;
                         }
 
                         string narrative = elements[3];
@@ -99,8 +101,10 @@ namespace SupportBank
                         }
                         catch (FormatException ex)
                         {
-                            logger.Error("Amount is in incorrect format");
-                            Console.WriteLine(ex);
+                            logger.Error("Error is on line {0}.  Amount is in incorrect format.", lineCounter);
+                            Console.WriteLine("Error is on line {0}.  Amount is in incorrect format.  Note that " +
+                                "this entry has not been included.\n ", lineCounter);
+                            continue;
                         }
 
                         fromPerson = updatePerson(people, elements[1], -amount);
@@ -112,7 +116,7 @@ namespace SupportBank
                 logger.Info("Finished reading file");
 
                 Console.WriteLine("Type the name of the account you would like to look at the transactions for.\n" +
-                    "If you wish to view all transactions, please type \"all\". \n" +
+                    "If you wish to view all transactions, please type \"all\". \n\n" +
                     "There are accounts for the following people:");
 
 

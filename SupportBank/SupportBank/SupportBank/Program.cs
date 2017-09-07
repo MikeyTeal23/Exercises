@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using NLog.Config;
+using NLog;
+using NLog.Targets;
 
 namespace SupportBank
 {
@@ -14,6 +17,8 @@ namespace SupportBank
     {
         static Person findPerson(string personName, List<Person> people)
         {
+            logger.Info("Finding name in list");
+
             Person person = people.Find(p => (p.Name == personName));
             return person;
         }
@@ -24,24 +29,37 @@ namespace SupportBank
 
             if (!people.Any(p => p.Name.Equals(name)))
             {
+                logger.Info("Adding new person");
+
                 fromPerson = new Person(name, amount);
                 people.Add(fromPerson);
             }
             else
             {
+                logger.Info("Updating person");
+
                 fromPerson = findPerson(name, people);
                 fromPerson.updateBalance(amount);
             }
 
             return fromPerson;
         }
-       
+
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         static void Main(string[] args)
         {
-            int noOfLines = 0;
+            var config = new LoggingConfiguration();
+            var target = new FileTarget { FileName = @"C:\Work\Logs\SupportBank.log", Layout = @"${longdate} ${level} - ${logger}: ${message}" };
+            config.AddTarget("File Logger", target);
+            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));
+            LogManager.Configuration = config;
 
-            using (var reader = new StreamReader(@"\Work\Training\Exercises\SupportBank\Transactions2014.csv"))
+            int lineCounter = 0;
+
+            logger.Info("Starting to read through CSV file");
+
+            using (var reader = new StreamReader(@"\Work\Training\Exercises\SupportBank\Transactions2015.csv"))
             {
                 List<Transaction> transactions = new List<Transaction>();
                 List<Person> people = new List<Person>();
@@ -49,32 +67,59 @@ namespace SupportBank
 
                 Person fromPerson;
                 Person toPerson;
+                decimal amount = 0;
+                DateTime date = DateTime.MinValue;
 
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
                     var elements = line.Split(',');
 
-                    if (noOfLines > 0)
+                    lineCounter++;
+
+                    if (lineCounter > 1)
                     {
-                        DateTime date = Convert.ToDateTime(elements[0]);
+                        logger.Info("Taking information from new line.");
+
+                        try
+                        {
+                            date = Convert.ToDateTime(elements[0]);
+                        }
+                        catch (FormatException ex)
+                        {
+                            logger.Error("Date is in incorrect format");
+                            Console.WriteLine(ex);
+                        }
+
                         string narrative = elements[3];
-                        decimal amount = Convert.ToDecimal(elements[4]);
+
+                        try
+                        {
+                            amount = Convert.ToDecimal(elements[4]);
+                        }
+                        catch (FormatException ex)
+                        {
+                            logger.Error("Amount is in incorrect format");
+                            Console.WriteLine(ex);
+                        }
 
                         fromPerson = updatePerson(people, elements[1], -amount);
                         toPerson = updatePerson(people, elements[2], amount);
                         transactions.Add(new Transaction(fromPerson, toPerson, narrative, date, amount));
                     }
-
-                    noOfLines++;
                 }
+
+                logger.Info("Finished reading file");
 
                 Console.WriteLine("Type the name of the account you would like to look at the transactions for.\n" +
                     "If you wish to view all transactions, please type \"all\". \n" +
                     "There are accounts for the following people:");
 
+
                 //foreach (Person person in people) { person.outputBalance(); }
                 foreach (Person person in people) { Console.WriteLine(person.Name); }
+
+                logger.Info("Waiting for user input");
 
                 string reply = Console.ReadLine();
                 

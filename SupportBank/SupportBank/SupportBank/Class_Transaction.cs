@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLog.Config;
+using NLog;
+using NLog.Targets;
 
 namespace SupportBank
 {

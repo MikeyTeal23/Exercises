@@ -8,8 +8,6 @@ namespace SupportBank
 {
     class Person
     {
-        private decimal balance;
-
         public string Name { get; set; }
         public decimal Balance { get; set; }
         

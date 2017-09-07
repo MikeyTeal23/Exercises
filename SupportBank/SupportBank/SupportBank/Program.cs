@@ -84,12 +84,10 @@ namespace SupportBank
                 }
                 else
                 {
-                    foreach (Transaction transaction in transactions)
+                    transactions.Where(t => t.Payee.Name == reply);
+                    foreach (Transaction transaction in transactions.Where(t => t.Payee.Name == reply || t.Payer.Name == reply))
                     {
-                        if (transaction.Payee.Name == reply || transaction.Payer.Name == reply)
-                        {
-                            transaction.outputTransaction();
-                        }
+                        transaction.outputTransaction();
                     }
                 }
             }

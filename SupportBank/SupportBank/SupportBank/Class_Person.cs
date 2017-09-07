@@ -33,5 +33,10 @@ namespace SupportBank
             Console.WriteLine("{0} has a balance of £{1}.", this.Name, this.Balance);
         }
 
+        public void outputName()
+        {
+            Console.WriteLine("{0}", this.Name);
+        }
+
     }
 }

@@ -11,40 +11,8 @@ using NLog.Targets;
 namespace SupportBank
 {
 
-
-
     class Program
     {
-        static Person findPerson(string personName, List<Person> people)
-        {
-            logger.Info("Finding name in list");
-
-            Person person = people.Find(p => (p.Name == personName));
-            return person;
-        }
-
-        static Person updatePerson(List<Person> people, string name, decimal amount)
-        {
-            Person fromPerson;
-
-            if (!people.Any(p => p.Name.Equals(name)))
-            {
-                logger.Info("Adding new person");
-
-                fromPerson = new Person(name, amount);
-                people.Add(fromPerson);
-            }
-            else
-            {
-                logger.Info("Updating person");
-
-                fromPerson = findPerson(name, people);
-                fromPerson.updateBalance(amount);
-            }
-
-            return fromPerson;
-        }
-
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         static void Main(string[] args)
@@ -55,21 +23,39 @@ namespace SupportBank
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));
             LogManager.Configuration = config;
 
-            int lineCounter = 0;
-
             logger.Info("Starting to read through CSV file");
 
-            using (var reader = new StreamReader(@"\Work\Training\Exercises\SupportBank\Transactions2015.csv"))
+            string inputFile = @"\Work\Training\Exercises\SupportBank\Transactions2015.csv";
+            List<Transaction> transactions = readTransactions(inputFile);
+            List<Person> people = createPeople(transactions);
+
+            Console.WriteLine("Type the name of the account you would like to look at the transactions for.\n" +
+                "If you wish to view all transactions, please type \"all\". \n\n" +
+                "There are accounts for the following people:");
+
+            foreach (Person person in people) { person.outputName(); }
+
+            logger.Info("Waiting for user input");
+
+            string reply = Console.ReadLine();
+
+            GetRequestedOutput(reply, transactions);
+
+        }
+
+        static List<Transaction> readTransactions(string filename)
+        {
+            int lineCounter = 0;
+
+            List<Transaction> transactions = new List<Transaction>();
+            List<Person> people = new List<Person>();
+            Person fromPerson;
+            Person toPerson;
+            decimal amount;
+            DateTime date;
+
+            using (var reader = new StreamReader(filename))
             {
-                List<Transaction> transactions = new List<Transaction>();
-                List<Person> people = new List<Person>();
-                List<decimal> balance = new List<decimal>();
-
-                Person fromPerson;
-                Person toPerson;
-                decimal amount = 0;
-                DateTime date = DateTime.MinValue;
-
                 while (!reader.EndOfStream)
                 {
                     var line = reader.ReadLine();
@@ -107,40 +93,80 @@ namespace SupportBank
                             continue;
                         }
 
-                        fromPerson = updatePerson(people, elements[1], -amount);
-                        toPerson = updatePerson(people, elements[2], amount);
+                        fromPerson = new Person(elements[1], 0);
+                        toPerson = new Person(elements[2], 0);
+
                         transactions.Add(new Transaction(fromPerson, toPerson, narrative, date, amount));
                     }
                 }
+            }
 
-                logger.Info("Finished reading file");
+            logger.Info("Finished reading file");
+            return transactions;
+        }
 
-                Console.WriteLine("Type the name of the account you would like to look at the transactions for.\n" +
-                    "If you wish to view all transactions, please type \"all\". \n\n" +
-                    "There are accounts for the following people:");
+        static List<Person> createPeople(List<Transaction> transactions)
+        {
+            List<Person> people = new List<Person>();
 
+            foreach (Transaction transaction in transactions)
 
-                //foreach (Person person in people) { person.outputBalance(); }
-                foreach (Person person in people) { Console.WriteLine(person.Name); }
-
-                logger.Info("Waiting for user input");
-
-                string reply = Console.ReadLine();
-                
-                if (reply == "all")
+                if (!people.Any(p => p.Name.Equals(transaction.Payee.Name)))
                 {
-                    foreach (Transaction transaction in transactions) { transaction.outputTransaction(); }
+                    logger.Info("Adding new person");
+
+                    Person newPerson = new Person(transaction.Payee.Name, -transaction.Amount);
+                    people.Add(newPerson);
                 }
                 else
                 {
-                    transactions.Where(t => t.Payee.Name == reply);
-                    foreach (Transaction transaction in transactions.Where(t => t.Payee.Name == reply || t.Payer.Name == reply))
-                    {
-                        transaction.outputTransaction();
-                    }
+                    logger.Info("Updating person");
+
+                    Person oldPerson = findPerson(transaction.Payee.Name, people);
+                    oldPerson.updateBalance(-transaction.Amount);
+                }
+
+            foreach (Transaction transaction in transactions)
+
+                if (!people.Any(p => p.Name.Equals(transaction.Payer.Name)))
+                {
+                    logger.Info("Adding new person");
+
+                    Person newPerson = new Person(transaction.Payer.Name, transaction.Amount);
+                    people.Add(newPerson);
+                }
+                else
+                {
+                    logger.Info("Updating person");
+
+                    Person oldPerson = findPerson(transaction.Payer.Name, people);
+                    oldPerson.updateBalance(transaction.Amount);
+                }
+
+            return people;
+        }
+
+        static Person findPerson(string personName, List<Person> people)
+        {
+            logger.Info("Finding name in list");
+
+            Person person = people.Find(p => (p.Name == personName));
+            return person;
+        }
+
+        static void GetRequestedOutput(string reply, List<Transaction> transactions)
+        {
+            if (reply == "all")
+            {
+                foreach (Transaction transaction in transactions) { transaction.outputTransaction(); }
+            }
+            else
+            {
+                foreach (Transaction transaction in transactions.Where(t => t.Payee.Name == reply || t.Payer.Name == reply))
+                {
+                    transaction.outputTransaction();
                 }
             }
         }
     }
 }
-

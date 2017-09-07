@@ -8,33 +8,11 @@ namespace SupportBank
 {
     class Person
     {
-        private string name;
-        private decimal balance = 0;
+        private decimal balance;
 
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-            set
-            {
-                name = value;
-            }
-        }
-
-        public decimal Balance
-        {
-            get
-            {
-                return balance;
-            }
-            set
-            {
-                balance = value;
-            }
-        }
-
+        public string Name { get; set; }
+        public decimal Balance { get; set; }
+        
         public Person(string name, decimal balance)
         {
             Name = name;
@@ -43,12 +21,13 @@ namespace SupportBank
 
         public void updateBalance(decimal amount)
         {
-            this.balance += amount;
+            this.Balance += amount;
         }
 
         public void outputBalance()
         {
             Console.WriteLine("{0} has a balance of £{1}.", this.Name, this.Balance);
         }
+
     }
 }

@@ -63,39 +63,35 @@ namespace SupportBank
 
                         fromPerson = updatePerson(people, elements[1], -amount);
                         toPerson = updatePerson(people, elements[2], amount);
-
-                        //if (!people.Any(p => p.Name.Equals(elements[1])))
-                        //{
-                        //    fromPerson = new Person(elements[1], -amount);
-                        //    people.Add(fromPerson);
-                        //}
-                        //else
-                        //{
-                        //    fromPerson = findPerson(elements[1], people);
-                        //    fromPerson.updateBalance(-amount);
-                        //}
-
-                        //if (!people.Any(p => p.Name.Equals(elements[2])))
-                        //{
-                        //    toPerson = new Person(elements[2], amount);
-                        //    people.Add(toPerson);
-                        //}
-                        //else
-                        //{
-                        //    toPerson = findPerson(elements[2], people);
-                        //    toPerson.updateBalance(amount);
-                        //}
-
                         transactions.Add(new Transaction(fromPerson, toPerson, narrative, date, amount));
                     }
 
                     noOfLines++;
                 }
 
-                foreach (Person person in people) { person.outputBalance(); }
+                Console.WriteLine("Type the name of the account you would like to look at the transactions for.\n" +
+                    "If you wish to view all transactions, please type \"all\". \n" +
+                    "There are accounts for the following people:");
 
-                foreach (Transaction transaction in transactions) { transaction.outputTransaction(); }
+                //foreach (Person person in people) { person.outputBalance(); }
+                foreach (Person person in people) { Console.WriteLine(person.Name); }
 
+                string reply = Console.ReadLine();
+                
+                if (reply == "all")
+                {
+                    foreach (Transaction transaction in transactions) { transaction.outputTransaction(); }
+                }
+                else
+                {
+                    foreach (Transaction transaction in transactions)
+                    {
+                        if (transaction.Payee.Name == reply || transaction.Payer.Name == reply)
+                        {
+                            transaction.outputTransaction();
+                        }
+                    }
+                }
             }
         }
     }

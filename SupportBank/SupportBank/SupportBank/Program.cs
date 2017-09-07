@@ -8,47 +8,6 @@ using System.IO;
 namespace SupportBank
 {
 
-    class Person
-    {
-        private string name;
-        private decimal balance = 0;
-
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-            set
-            {
-                name = value;
-            }
-        }
-
-        public decimal Balance
-        {
-            get
-            {
-                return balance;
-            }
-            set
-            {
-                balance = value;
-            }
-        }
-
-        public Person(string name, decimal balance)
-        {
-            Name = name;
-            Balance = balance;
-        }
-
-        public void updateBalance(decimal amount)
-        {
-            this.balance += amount;
-        }
-
-    }
 
     class Program
     {
@@ -58,8 +17,12 @@ namespace SupportBank
 
             using (var reader = new StreamReader(@"\Work\Training\Exercises\SupportBank\Transactions2014.csv"))
             {
+                List<Transaction> transactions = new List<Transaction>();
                 List<Person> people = new List<Person>();
                 List<decimal> balance = new List<decimal>();
+
+                Person fromPerson;
+                Person toPerson;
 
                 while (!reader.EndOfStream)
                 {
@@ -70,41 +33,49 @@ namespace SupportBank
                     {
                         Console.WriteLine(elements[4]);
 
+                        DateTime date = Convert.ToDateTime(elements[0]);
+                        string narrative = elements[3];
                         decimal amount = Convert.ToDecimal(elements[4]);
 
                         if (!people.Any(p => p.Name.Equals(elements[1])))
                         {
-                            people.Add(new Person(elements[1], -amount));
+                            fromPerson = new Person(elements[1], -amount);
+                            people.Add(fromPerson);
                         }
                         else
                         {
-                            Person tempPerson = people.Find(p => (p.Name == elements[1]));
-                            people[people.IndexOf(tempPerson)].updateBalance(-amount);
+                            fromPerson = people.Find(p => (p.Name == elements[1]));
+                            people[people.IndexOf(fromPerson)].updateBalance(-amount);
                         }
 
                         if (!people.Any(p => p.Name.Equals(elements[2])))
                         {
-                            people.Add(new Person(elements[2], amount));
+                            toPerson = new Person(elements[2], amount);
+                            people.Add(toPerson);
                         }
                         else
                         {
-                            Person tempPerson = people.Find(p => (p.Name == elements[2]));
-                            people[people.IndexOf(tempPerson)].updateBalance(amount);
+                            toPerson = people.Find(p => (p.Name == elements[2]));
+                            people[people.IndexOf(toPerson)].updateBalance(amount);
                         }
 
-                        }
-
-                        noOfLines++;
+                        transactions.Add(new Transaction(fromPerson, toPerson, narrative, date, amount));
                     }
 
-                    foreach (Person person in people)
-                    {
-                        Console.WriteLine("{0} has a balance of £{1}.", person.Name, person.Balance);
-                    }
+                    noOfLines++;
                 }
 
+                foreach (Person person in people)
+                {
+                    Console.WriteLine("{0} has a balance of £{1}.", person.Name, person.Balance);
+                }
 
+                foreach (Transaction transaction in transactions)
+                {
+                    Console.WriteLine("{0} owed {1} £{2} for {3} on {4}", transaction.Payer.Name, transaction.Payee.Name, transaction.Amount, transaction.Narrative, transaction.Date.ToString("dd/MM/yyyy"));
+                }
             }
         }
     }
+}
 

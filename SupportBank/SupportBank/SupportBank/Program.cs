@@ -11,7 +11,7 @@ namespace SupportBank
     class Person
     {
         private string name;
-        private double balance = 0;
+        private decimal balance = 0;
 
         public string Name
         {
@@ -25,7 +25,7 @@ namespace SupportBank
             }
         }
 
-        public double Balance
+        public decimal Balance
         {
             get
             {
@@ -37,18 +37,16 @@ namespace SupportBank
             }
         }
 
-        public Person(string name, double balance)
+        public Person(string name, decimal balance)
         {
             Name = name;
             Balance = balance;
         }
 
-        public void updateBalance(double amount)
+        public void updateBalance(decimal amount)
         {
             this.balance += amount;
         }
-
-
 
     }
 
@@ -56,13 +54,12 @@ namespace SupportBank
     {
         static void Main(string[] args)
         {
-
             int noOfLines = 0;
 
             using (var reader = new StreamReader(@"\Work\Training\Exercises\SupportBank\Transactions2014.csv"))
             {
                 List<Person> people = new List<Person>();
-                List<double> balance = new List<double>();
+                List<decimal> balance = new List<decimal>();
 
                 while (!reader.EndOfStream)
                 {
@@ -73,7 +70,7 @@ namespace SupportBank
                     {
                         Console.WriteLine(elements[4]);
 
-                        double amount = Convert.ToDouble(elements[4]);
+                        decimal amount = Convert.ToDecimal(elements[4]);
 
                         if (!people.Any(p => p.Name.Equals(elements[1])))
                         {
@@ -102,7 +99,7 @@ namespace SupportBank
 
                     foreach (Person person in people)
                     {
-                        Console.WriteLine(person.Name);
+                        Console.WriteLine("{0} has a balance of £{1}.", person.Name, person.Balance);
                     }
                 }
 

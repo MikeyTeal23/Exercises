@@ -26,7 +26,11 @@ namespace SupportBank
             logger.Info("Starting to read through file");
 
             string inputFile = @"\Work\Training\Exercises\SupportBank\Transactions2012.xml";
-            List<Transaction> transactions = CreateXMLTransactionList(inputFile);
+
+            ParserFactory parserFactory = new ParserFactory();
+            var parser = parserFactory.makeParser(inputFile);
+
+            List<Transaction> transactions = parser.CreateTransactionList(inputFile);
             List<Person> people = CreatePeopleList(transactions);
 
             Console.WriteLine("Type the name of the account you would like to look at the transactions for.\n" +
@@ -45,22 +49,7 @@ namespace SupportBank
             GetRequestedOutput(reply, transactions);
         }
 
-        static List<Transaction> CreateTransactionList(string filename)
-        {
-            List<Transaction> transactions = new List<Transaction>();
-            int index = filename.LastIndexOf(".");
-            string fileType = filename.Substring(index, filename.Length - index);
 
-            if(fileType == ".csv")
-            {
-                transactions = CreateCSVTransactionList(filename);
-            }
-            else if(fileType == ".json")
-            {
-                transactions = CreateJSONTransactionList(filename);
-            }
-            return transactions;
-        }
 
         //static List<Transaction> CreateXMLTransactionList(string filename)
         //{
@@ -116,123 +105,6 @@ namespace SupportBank
 
         //    return transactions;
         //}
-
-        static List<Transaction> CreateJSONTransactionList(string filename)
-        {
-            List<RawTransaction> t = new List<RawTransaction>();
-            List<Transaction> transactions = new List<Transaction>();
-            DateTime date;
-            decimal amount;
-
-            using (StreamReader r = new StreamReader(filename))
-            {
-                string jsonString = r.ReadToEnd();
-                t = JsonConvert.DeserializeObject<List<RawTransaction>>(jsonString);
-            }
-            logger.Info("Finished reading file");
-
-            int lineCounter = 0;
-
-            foreach (RawTransaction transactionString in t)
-            {
-                lineCounter++;
-                try
-                {
-                    date = Convert.ToDateTime(transactionString.Date);
-                }
-                catch (FormatException ex)
-                {
-                    logger.Error("Error is in entry {0}.  Date is in incorrect format.", lineCounter);
-                    Console.WriteLine("Error is in entry {0}.  Date is in incorrect format.  Note that " +
-                        "this entry has not been included.\n ", lineCounter);
-                    continue;
-                }
-
-                string narrative = transactionString.Narrative;
-
-                try
-                {
-                    amount = Convert.ToDecimal(transactionString.Amount);
-                }
-                catch (FormatException ex)
-                {
-                    logger.Error("Error is in entry {0}.  Amount is in incorrect format.", lineCounter);
-                    Console.WriteLine("Error is in entry line {0}.  Amount is in incorrect format.  Note that " +
-                        "this entry has not been included.\n ", lineCounter);
-                    continue;
-                }
-
-                Person fromPerson = new Person(transactionString.FromAccount, 0);
-                Person toPerson = new Person(transactionString.ToAccount, 0);
-
-                transactions.Add(new Transaction(fromPerson, toPerson, narrative, date, amount));
-
-            }
-
-            return transactions;
-        }
-
-        static List<Transaction> CreateCSVTransactionList(string filename)
-        {
-            int lineCounter = 0;
-
-            List<Transaction> transactions = new List<Transaction>();
-            List<Person> people = new List<Person>();
-            Person fromPerson;
-            Person toPerson;
-            decimal amount;
-            DateTime date;
-
-            using (var reader = new StreamReader(filename))
-            {
-                while (!reader.EndOfStream)
-                {
-                    var line = reader.ReadLine();
-                    var elements = line.Split(',');
-
-                    lineCounter++;
-
-                    if (lineCounter > 1)
-                    {
-                        logger.Info("Taking information from new line.");
-
-                        try
-                        {
-                            date = Convert.ToDateTime(elements[0]);
-                        }
-                        catch (FormatException ex)
-                        {
-                            logger.Error("Error is on line {0}.  Date is in incorrect format.", lineCounter);
-                            Console.WriteLine("Error is on line {0}.  Date is in incorrect format.  Note that " +
-                                "this entry has not been included.\n ", lineCounter);
-                            continue;
-                        }
-
-                        string narrative = elements[3];
-
-                        try
-                        {
-                            amount = Convert.ToDecimal(elements[4]);
-                        }
-                        catch (FormatException ex)
-                        {
-                            logger.Error("Error is on line {0}.  Amount is in incorrect format.", lineCounter);
-                            Console.WriteLine("Error is on line {0}.  Amount is in incorrect format.  Note that " +
-                                "this entry has not been included.\n ", lineCounter);
-                            continue;
-                        }
-
-                        fromPerson = new Person(elements[1], 0);
-                        toPerson = new Person(elements[2], 0);
-
-                        transactions.Add(new Transaction(fromPerson, toPerson, narrative, date, amount));
-                    }
-                }
-            }
-
-            logger.Info("Finished reading file");
-            return transactions;
-        }
 
         static List<Person> CreatePeopleList(List<Transaction> transactions)
         {

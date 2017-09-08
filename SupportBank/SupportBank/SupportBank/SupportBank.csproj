@@ -60,9 +60,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CsvParser.cs" />
+    <Compile Include="JsonParser.cs" />
     <Compile Include="Class_RawTransactions.cs" />
     <Compile Include="Class_Person.cs" />
     <Compile Include="Class_Transaction.cs" />
+    <Compile Include="Parser.cs" />
+    <Compile Include="ParserFactory.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

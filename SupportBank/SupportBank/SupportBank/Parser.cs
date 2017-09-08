@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace SupportBank
 {
-    class Class1
+    class Parser
     {
+        public virtual List<Transaction> CreateTransactionList(string filename)
+        {
+            return null;
+        }
     }
 }

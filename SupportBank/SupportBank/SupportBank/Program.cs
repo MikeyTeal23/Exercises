@@ -9,6 +9,8 @@ using NLog;
 using NLog.Targets;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace SupportBank
 {
@@ -23,8 +25,8 @@ namespace SupportBank
 
             logger.Info("Starting to read through file");
 
-            string inputFile = @"\Work\Training\Exercises\SupportBank\Transactions2014.csv";
-            List<Transaction> transactions = CreateTransactionList(inputFile);
+            string inputFile = @"\Work\Training\Exercises\SupportBank\Transactions2012.xml";
+            List<Transaction> transactions = CreateXMLTransactionList(inputFile);
             List<Person> people = CreatePeopleList(transactions);
 
             Console.WriteLine("Type the name of the account you would like to look at the transactions for.\n" +
@@ -60,6 +62,61 @@ namespace SupportBank
             return transactions;
         }
 
+        //static List<Transaction> CreateXMLTransactionList(string filename)
+        //{
+        //    List<RawTransaction> t = new List<RawTransaction>();
+        //    List<Transaction> transactions = new List<Transaction>();
+        //    DateTime date;
+        //    decimal amount;
+
+        //    using (XmlReader reader = XmlReader.Create(filename))
+        //    {
+
+        //    }
+
+        //    logger.Info("Finished reading file");
+
+        //    int lineCounter = 0;
+
+        //    foreach (RawTransaction transactionString in t)
+        //    {
+        //        lineCounter++;
+        //        try
+        //        {
+        //            date = Convert.ToDateTime(transactionString.Date);
+        //        }
+        //        catch (FormatException ex)
+        //        {
+        //            logger.Error("Error is in entry {0}.  Date is in incorrect format.", lineCounter);
+        //            Console.WriteLine("Error is in entry {0}.  Date is in incorrect format.  Note that " +
+        //                "this entry has not been included.\n ", lineCounter);
+        //            continue;
+        //        }
+
+        //        string narrative = transactionString.Narrative;
+
+        //        try
+        //        {
+        //            amount = Convert.ToDecimal(transactionString.Amount);
+        //        }
+        //        catch (FormatException ex)
+        //        {
+        //            logger.Error("Error is in entry {0}.  Amount is in incorrect format.", lineCounter);
+        //            Console.WriteLine("Error is in entry line {0}.  Amount is in incorrect format.  Note that " +
+        //                "this entry has not been included.\n ", lineCounter);
+        //            continue;
+        //        }
+
+        //        Person fromPerson = new Person(transactionString.FromAccount, 0);
+        //        Person toPerson = new Person(transactionString.ToAccount, 0);
+
+        //        transactions.Add(new Transaction(fromPerson, toPerson, narrative, date, amount));
+
+        //    }
+
+        //    return transactions;
+        //}
+
         static List<Transaction> CreateJSONTransactionList(string filename)
         {
             List<RawTransaction> t = new List<RawTransaction>();
@@ -72,6 +129,7 @@ namespace SupportBank
                 string jsonString = r.ReadToEnd();
                 t = JsonConvert.DeserializeObject<List<RawTransaction>>(jsonString);
             }
+            logger.Info("Finished reading file");
 
             int lineCounter = 0;
 
@@ -111,7 +169,6 @@ namespace SupportBank
 
             }
 
-            logger.Info("Finished reading file");
             return transactions;
         }
 

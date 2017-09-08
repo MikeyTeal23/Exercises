@@ -26,8 +26,8 @@ namespace SupportBank
             logger.Info("Starting to read through CSV file");
 
             string inputFile = @"\Work\Training\Exercises\SupportBank\Transactions2015.csv";
-            List<Transaction> transactions = readTransactions(inputFile);
-            List<Person> people = createPeople(transactions);
+            List<Transaction> transactions = createTransactionList(inputFile);
+            List<Person> people = createPeopleList(transactions);
 
             Console.WriteLine("Type the name of the account you would like to look at the transactions for.\n" +
                 "If you wish to view all transactions, please type \"all\". \n\n" +
@@ -43,7 +43,7 @@ namespace SupportBank
 
         }
 
-        static List<Transaction> readTransactions(string filename)
+        static List<Transaction> createTransactionList(string filename)
         {
             int lineCounter = 0;
 
@@ -105,43 +105,34 @@ namespace SupportBank
             return transactions;
         }
 
-        static List<Person> createPeople(List<Transaction> transactions)
+        static List<Person> createPeopleList(List<Transaction> transactions)
         {
             List<Person> people = new List<Person>();
 
             foreach (Transaction transaction in transactions)
 
-                if (!people.Any(p => p.Name.Equals(transaction.Payee.Name)))
+            {
+                string[] nameArray = { transaction.Payee.Name, transaction.Payer.Name };
+
+                foreach (string name in nameArray)
                 {
-                    logger.Info("Adding new person");
 
-                    Person newPerson = new Person(transaction.Payee.Name, -transaction.Amount);
-                    people.Add(newPerson);
+                    if (!people.Any(p => p.Name.Equals(transaction.Payee.Name)))
+                    {
+                        logger.Info("Adding new person");
+
+                        Person newPerson = new Person(transaction.Payee.Name, -transaction.Amount);
+                        people.Add(newPerson);
+                    }
+                    else
+                    {
+                        logger.Info("Updating person");
+
+                        Person oldPerson = findPerson(transaction.Payee.Name, people);
+                        oldPerson.updateBalance(-transaction.Amount);
+                    }
                 }
-                else
-                {
-                    logger.Info("Updating person");
-
-                    Person oldPerson = findPerson(transaction.Payee.Name, people);
-                    oldPerson.updateBalance(-transaction.Amount);
-                }
-
-            foreach (Transaction transaction in transactions)
-
-                if (!people.Any(p => p.Name.Equals(transaction.Payer.Name)))
-                {
-                    logger.Info("Adding new person");
-
-                    Person newPerson = new Person(transaction.Payer.Name, transaction.Amount);
-                    people.Add(newPerson);
-                }
-                else
-                {
-                    logger.Info("Updating person");
-
-                    Person oldPerson = findPerson(transaction.Payer.Name, people);
-                    oldPerson.updateBalance(transaction.Amount);
-                }
+            }
 
             return people;
         }

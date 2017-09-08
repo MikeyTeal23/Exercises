@@ -7,6 +7,8 @@ using System.IO;
 using NLog.Config;
 using NLog;
 using NLog.Targets;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace SupportBank
 {
@@ -19,9 +21,9 @@ namespace SupportBank
         {
             CreateLogger();
 
-            logger.Info("Starting to read through CSV file");
+            logger.Info("Starting to read through file");
 
-            string inputFile = @"\Work\Training\Exercises\SupportBank\Transactions2015.csv";
+            string inputFile = @"\Work\Training\Exercises\SupportBank\Transactions2014.csv";
             List<Transaction> transactions = CreateTransactionList(inputFile);
             List<Person> people = CreatePeopleList(transactions);
 
@@ -39,10 +41,81 @@ namespace SupportBank
             string reply = Console.ReadLine();
 
             GetRequestedOutput(reply, transactions);
-
         }
 
         static List<Transaction> CreateTransactionList(string filename)
+        {
+            List<Transaction> transactions = new List<Transaction>();
+            int index = filename.LastIndexOf(".");
+            string fileType = filename.Substring(index, filename.Length - index);
+
+            if(fileType == ".csv")
+            {
+                transactions = CreateCSVTransactionList(filename);
+            }
+            else if(fileType == ".json")
+            {
+                transactions = CreateJSONTransactionList(filename);
+            }
+            return transactions;
+        }
+
+        static List<Transaction> CreateJSONTransactionList(string filename)
+        {
+            List<RawTransaction> t = new List<RawTransaction>();
+            List<Transaction> transactions = new List<Transaction>();
+            DateTime date;
+            decimal amount;
+
+            using (StreamReader r = new StreamReader(filename))
+            {
+                string jsonString = r.ReadToEnd();
+                t = JsonConvert.DeserializeObject<List<RawTransaction>>(jsonString);
+            }
+
+            int lineCounter = 0;
+
+            foreach (RawTransaction transactionString in t)
+            {
+                lineCounter++;
+                try
+                {
+                    date = Convert.ToDateTime(transactionString.Date);
+                }
+                catch (FormatException ex)
+                {
+                    logger.Error("Error is in entry {0}.  Date is in incorrect format.", lineCounter);
+                    Console.WriteLine("Error is in entry {0}.  Date is in incorrect format.  Note that " +
+                        "this entry has not been included.\n ", lineCounter);
+                    continue;
+                }
+
+                string narrative = transactionString.Narrative;
+
+                try
+                {
+                    amount = Convert.ToDecimal(transactionString.Amount);
+                }
+                catch (FormatException ex)
+                {
+                    logger.Error("Error is in entry {0}.  Amount is in incorrect format.", lineCounter);
+                    Console.WriteLine("Error is in entry line {0}.  Amount is in incorrect format.  Note that " +
+                        "this entry has not been included.\n ", lineCounter);
+                    continue;
+                }
+
+                Person fromPerson = new Person(transactionString.FromAccount, 0);
+                Person toPerson = new Person(transactionString.ToAccount, 0);
+
+                transactions.Add(new Transaction(fromPerson, toPerson, narrative, date, amount));
+
+            }
+
+            logger.Info("Finished reading file");
+            return transactions;
+        }
+
+        static List<Transaction> CreateCSVTransactionList(string filename)
         {
             int lineCounter = 0;
 
@@ -111,23 +184,23 @@ namespace SupportBank
             foreach (Transaction transaction in transactions)
 
             {
-                string[] nameArray = { transaction.Payee.Name, transaction.Payer.Name };
+                string[] nameArray = { transaction.ToAccount.Name, transaction.FromAccount.Name };
 
                 foreach (string name in nameArray)
                 {
 
-                    if (!people.Any(p => p.Name.Equals(transaction.Payee.Name)))
+                    if (!people.Any(p => p.Name.Equals(transaction.ToAccount.Name)))
                     {
                         logger.Info("Adding new person");
 
-                        Person newPerson = new Person(transaction.Payee.Name, -transaction.Amount);
+                        Person newPerson = new Person(transaction.ToAccount.Name, -transaction.Amount);
                         people.Add(newPerson);
                     }
                     else
                     {
                         logger.Info("Updating person");
 
-                        Person oldPerson = FindPerson(transaction.Payee.Name, people);
+                        Person oldPerson = FindPerson(transaction.ToAccount.Name, people);
                         oldPerson.UpdateBalance(-transaction.Amount);
                     }
                 }
@@ -152,7 +225,7 @@ namespace SupportBank
             }
             else
             {
-                foreach (Transaction transaction in transactions.Where(t => t.Payee.Name == reply || t.Payer.Name == reply))
+                foreach (Transaction transaction in transactions.Where(t => t.ToAccount.Name == reply || t.FromAccount.Name == reply))
                 {
                     transaction.OutputTransaction();
                 }

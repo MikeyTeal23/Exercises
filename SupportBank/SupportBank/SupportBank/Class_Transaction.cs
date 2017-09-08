@@ -11,17 +11,17 @@ namespace SupportBank
 {
     class Transaction
     {
-        public Person Payer { get; set; }
-        public Person Payee { get; set; }
+        public Person FromAccount { get; set; }
+        public Person ToAccount { get; set; }
         public string Narrative { get; set; }
         public DateTime Date { get; set; }
         public decimal Amount { get; set; }
 
 
-        public Transaction(Person payer, Person payee, string narrative, DateTime date, decimal amount)
+        public Transaction(Person fromAccount, Person toAccount, string narrative, DateTime date, decimal amount)
         {
-            Payer = payer;
-            Payee = payee;
+            FromAccount = fromAccount;
+            ToAccount = toAccount;
             Narrative = narrative;
             Date = date;
             Amount = amount;
@@ -29,7 +29,7 @@ namespace SupportBank
 
         public void OutputTransaction()
         {
-            Console.WriteLine("{0} owed {1} £{2} for {3} on {4}", this.Payer.Name, this.Payee.Name, this.Amount, this.Narrative, this.Date.ToString("dd/MM/yyyy"));
+            Console.WriteLine("{0} owed {1} £{2} for {3} on {4}", this.FromAccount.Name, this.ToAccount.Name, this.Amount, this.Narrative, this.Date.ToString("dd/MM/yyyy"));
         }
 
         

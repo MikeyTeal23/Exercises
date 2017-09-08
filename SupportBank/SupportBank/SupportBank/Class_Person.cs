@@ -22,18 +22,18 @@ namespace SupportBank
             Balance = balance;
         }
 
-        public void updateBalance(decimal amount)
+        public void UpdateBalance(decimal amount)
         {
             this.Balance += amount;
             loggerPerson.Info("updating balance");
         }
 
-        public void outputBalance()
+        public void OutputBalance()
         {
             Console.WriteLine("{0} has a balance of £{1}.", this.Name, this.Balance);
         }
 
-        public void outputName()
+        public void OutputName()
         {
             Console.WriteLine("{0}", this.Name);
         }

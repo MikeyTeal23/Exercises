@@ -17,23 +17,22 @@ namespace SupportBank
 
         static void Main(string[] args)
         {
-            var config = new LoggingConfiguration();
-            var target = new FileTarget { FileName = @"C:\Work\Logs\SupportBank.log", Layout = @"${longdate} ${level} - ${logger}: ${message}" };
-            config.AddTarget("File Logger", target);
-            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));
-            LogManager.Configuration = config;
+            CreateLogger();
 
             logger.Info("Starting to read through CSV file");
 
             string inputFile = @"\Work\Training\Exercises\SupportBank\Transactions2015.csv";
-            List<Transaction> transactions = createTransactionList(inputFile);
-            List<Person> people = createPeopleList(transactions);
+            List<Transaction> transactions = CreateTransactionList(inputFile);
+            List<Person> people = CreatePeopleList(transactions);
 
             Console.WriteLine("Type the name of the account you would like to look at the transactions for.\n" +
                 "If you wish to view all transactions, please type \"all\". \n\n" +
                 "There are accounts for the following people:");
 
-            foreach (Person person in people) { person.outputName(); }
+            foreach (Person person in people)
+            {
+                person.OutputName();
+            }
 
             logger.Info("Waiting for user input");
 
@@ -43,7 +42,7 @@ namespace SupportBank
 
         }
 
-        static List<Transaction> createTransactionList(string filename)
+        static List<Transaction> CreateTransactionList(string filename)
         {
             int lineCounter = 0;
 
@@ -105,7 +104,7 @@ namespace SupportBank
             return transactions;
         }
 
-        static List<Person> createPeopleList(List<Transaction> transactions)
+        static List<Person> CreatePeopleList(List<Transaction> transactions)
         {
             List<Person> people = new List<Person>();
 
@@ -128,8 +127,8 @@ namespace SupportBank
                     {
                         logger.Info("Updating person");
 
-                        Person oldPerson = findPerson(transaction.Payee.Name, people);
-                        oldPerson.updateBalance(-transaction.Amount);
+                        Person oldPerson = FindPerson(transaction.Payee.Name, people);
+                        oldPerson.UpdateBalance(-transaction.Amount);
                     }
                 }
             }
@@ -137,7 +136,7 @@ namespace SupportBank
             return people;
         }
 
-        static Person findPerson(string personName, List<Person> people)
+        static Person FindPerson(string personName, List<Person> people)
         {
             logger.Info("Finding name in list");
 
@@ -149,15 +148,24 @@ namespace SupportBank
         {
             if (reply == "all")
             {
-                foreach (Transaction transaction in transactions) { transaction.outputTransaction(); }
+                foreach (Transaction transaction in transactions) { transaction.OutputTransaction(); }
             }
             else
             {
                 foreach (Transaction transaction in transactions.Where(t => t.Payee.Name == reply || t.Payer.Name == reply))
                 {
-                    transaction.outputTransaction();
+                    transaction.OutputTransaction();
                 }
             }
+        }
+
+        static void CreateLogger()
+        {
+            var config = new LoggingConfiguration();
+            var target = new FileTarget { FileName = @"C:\Work\Logs\SupportBank.log", Layout = @"${longdate} ${level} - ${logger}: ${message}" };
+            config.AddTarget("File Logger", target);
+            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));
+            LogManager.Configuration = config;
         }
     }
 }

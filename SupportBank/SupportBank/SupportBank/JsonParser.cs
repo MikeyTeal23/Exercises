@@ -13,11 +13,11 @@ using Newtonsoft.Json.Linq;
 
 namespace SupportBank
 {
-    class JsonParser : Parser
+    public class JsonParser : Parser
     {
         private static readonly ILogger loggerJson = LogManager.GetCurrentClassLogger();
 
-        public override List<Transaction> CreateTransactionList(string filename)
+        public List<Transaction> CreateTransactionList(string filename)
         {
             List<RawTransaction> t = new List<RawTransaction>();
             List<Transaction> transactions = new List<Transaction>();

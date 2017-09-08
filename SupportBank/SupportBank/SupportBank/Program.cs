@@ -27,10 +27,9 @@ namespace SupportBank
 
             string inputFile = @"\Work\Training\Exercises\SupportBank\Transactions2012.xml";
 
-            ParserFactory parserFactory = new ParserFactory();
-            var parser = parserFactory.makeParser(inputFile);
-
+            var parser = ParserFactory.MakeParser(inputFile);
             List<Transaction> transactions = parser.CreateTransactionList(inputFile);
+
             List<Person> people = CreatePeopleList(transactions);
 
             Console.WriteLine("Type the name of the account you would like to look at the transactions for.\n" +
@@ -58,9 +57,22 @@ namespace SupportBank
         //    DateTime date;
         //    decimal amount;
 
+
         //    using (XmlReader reader = XmlReader.Create(filename))
         //    {
+        //        while (reader.Read())
+        //        {
+        //            if ((reader.NodeType == XmlNodeType.Element) && (reader.Name.Contains("SupportTransaction")))
+        //            {
 
+
+        //            foreach (XmlNode node in doc.DocumentElement.ChildNodes)
+        //            {
+        //                string text = node.InnerText; //or loop through its children as well
+        //            }
+
+        //        }
+        //        }
         //    }
 
         //    logger.Info("Finished reading file");

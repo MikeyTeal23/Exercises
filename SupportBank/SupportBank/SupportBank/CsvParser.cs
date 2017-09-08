@@ -11,11 +11,11 @@ using NLog.Targets;
 
 namespace SupportBank
 {
-    class CsvParser : Parser
+    public class CsvParser : Parser
     {
         private static readonly ILogger loggerCsv = LogManager.GetCurrentClassLogger();
 
-        public override List<Transaction> CreateTransactionList(string filename)
+        public List<Transaction> CreateTransactionList(string filename)
         {
             int lineCounter = 0;
 

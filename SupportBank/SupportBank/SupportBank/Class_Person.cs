@@ -9,7 +9,7 @@ using NLog.Targets;
 
 namespace SupportBank
 {
-    class Person
+    public class Person
     {
         private static readonly ILogger loggerPerson = LogManager.GetCurrentClassLogger();
 

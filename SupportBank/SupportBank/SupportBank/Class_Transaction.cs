@@ -9,7 +9,7 @@ using NLog.Targets;
 
 namespace SupportBank
 {
-    class Transaction
+    public class Transaction
     {
         public Person FromAccount { get; set; }
         public Person ToAccount { get; set; }

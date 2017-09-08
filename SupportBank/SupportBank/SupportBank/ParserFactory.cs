@@ -9,30 +9,28 @@ using NLog.Targets;
 
 namespace SupportBank
 {
-    class ParserFactory
+    public class ParserFactory
     {
         private static readonly ILogger loggerFactory = LogManager.GetCurrentClassLogger();
 
-        public Parser makeParser(string filename)
+        public static Parser MakeParser(string filename)
         {
-            Parser parser = new Parser();
             int index = filename.LastIndexOf(".");
             string fileType = filename.Substring(index, filename.Length - index);
 
             if (fileType == ".csv")
             {
-                parser = new CsvParser();
+                return new CsvParser();
             }
             else if (fileType == ".json")
             {
-                parser = new JsonParser();
+                return new JsonParser();
             }
             else
             {
                 throw new Exception("Error - will not accept files of this type!\n" +
                     "Please enter .csv or .json files.\n");
             }
-            return parser;
         }
 
     }
